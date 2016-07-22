@@ -1,0 +1,26 @@
+{
+  "name": "novonity-plugin-vr",
+  "version": "1.0.0",
+  "description": "vr plugin",
+  "cordova": {
+    "id": "novonity-plugin-vr",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TivonChen/novonity-plugin-vr.git"
+  },
+  "keywords": [
+    "vr",
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "author": "TivonChen",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/TivonChen/novonity-plugin-vr/issues"
+  },
+  "homepage": "https://github.com/TivonChen/novonity-plugin-vr#readme"
+}
