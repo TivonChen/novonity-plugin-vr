@@ -1,6 +1,6 @@
 {
   "name": "novonity-plugin-vr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "vr plugin",
   "cordova": {
     "id": "novonity-plugin-vr",
