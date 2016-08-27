@@ -14,6 +14,9 @@
  * as recorded or prebaked soundfields. They can be of great use for background
  * effects which sound perfectly spatial. Examples include rain noise, crowd
  * noise or even the sound of the ocean off to one side.
+ *  The third method, referred to here as Stereo Sounds, allow the user to
+ * directly play back non-spatialized mono or stereo audio files. This is useful
+ * for music and other such audio.
  *
  * *****************************************************************************
  *
@@ -50,34 +53,50 @@
  *
  * *****************************************************************************
  *
- * Sound Files
+ * Sound Files and Preloading
  *
  * Both mono sound files for use with Sound Objects and multi-channel Ambisonic
- * sound files can be preloaded with a call to the following method:
+ * sound files can be preloaded into memory before playback or alternatively
+ * streamed during playback. Preloading can be useful to reduce CPU usage
+ * especially if the same audio clip is likely to be played back many times. In
+ * this case playback latency is also reduced.
+ *
+ * Sound files can be preloaded into memory by calling:
  *
  * - (bool)preloadSoundFile:(const NSString*)filename;
+ *
+ * Unused sound files can be unloaded with a call to:
+ *
+ * - (void)unloadSoundFile:(const NSString*)filename;
+ *
+ * NOTE: If a sound object, soundfield or stereo sound is created with a file
+ * that has not been preloaded, that audio will be streamed.
+ *
  *
  * *****************************************************************************
  *
  * Sound Objects
  *
- * The GVRAudioEngine allows the user to create virtual Sound Objects
- * which can be placed anywhere in space around the listener. These Sound Objects
- * take as input mono audio data which is then spatialized.
+ * The GVRAudioEngine allows the user to create virtual Sound Objects which can
+ * be placed anywhere in space around the listener. These Sound Objects take as
+ * input mono audio data which is then spatialized.
  *
- * Once a suitable audio file is preloaded, it can be played back in 3D space
- * with a call to the following function:
+ * Sounds can be played back in 3D space with a call to the following function:
  *
  * - (int)createSoundObject:(const NSString*)filename;
  *
- * Here the filename serves as a handle on the preloaded audio file.
+ * Here the filename serves as a handle on the audio file.
  *
  * This method returns an int handle which can be used to refer to the Sound
  * Object as it is manipulated.
  *
  * Playback of a Sound Object can be initiated with a call to:
  *
- * - (void)startSound:(int)soundId loopingEnabled:(bool)loopingEnabled;
+ * - (void)startSound:(int)sourceId loopingEnabled:(bool)loopingEnabled;
+ *
+ * and paused and resumed via:
+ * - (void)pauseSound:(int)sourceId;
+ * - (void)resumeSound:(int)sourceId;
  *
  * The loopingEnabled boolean allows the user to specify whether the sound
  * source should repeat continuously or should be played as a “single shot”.
@@ -93,7 +112,7 @@
  * The three variables x, y, z denote the position in Cartesian world space
  * coordinates at which the Sound Object shall appear.
  *
- * - (void)setSoundVolume:(int)soundId volume:(float)volume;
+ * - (void)setSoundVolume:(int)sourceId volume:(float)volume;
  *
  * The volume variable allows the user to control the loudness of individual
  * sources. This can be useful when some of your mono audio files are
@@ -108,12 +127,12 @@
  * The user can ensure that the Sound Object is currently playing before calling
  * the above methods with a call to:
  *
- * - (bool)isSoundPlaying:(int)soundId;
+ * - (bool)isSoundPlaying:(int)sourceId;
  *
  * Once one is finished with a sound object and wish to remove it, simply place
  * a call to:
  *
- * - (void)stopSound:(int)soundId;
+ * - (void)stopSound:(int)sourceId;
  *
  * On making a call to this function the Sound Object is destroyed and the
  * corresponding integer handle no longer refers to a valid Sound Object.
@@ -131,7 +150,7 @@
  * introducing background and environmental effects such as rain or crowd noise,
  * or even for pre baking 3D audio to reduce rendering costs.
  *
- * A preloaded multi channel Ambisonic sound file can be used to create a
+ * A preloaded multi-channel Ambisonic sound file can be used to create a
  * soundfield with a call to:
  *
  * - (int)createSoundfield:(const NSString*)filename;
@@ -142,8 +161,31 @@
  *
  *
  * - (void)startSound:(int)soudnObjectId loopingEnabled:(bool)loopingEnabled;
- * - (void)setSoundVolume:(int)soundId volume:(float)volume;
- * - (void)stopSound:(int)soundId;
+ * - (void)setSoundVolume:(int)sourceId volume:(float)volume;
+ * - (void)pauseSound:(int)sourceId;
+ * - (void)resumeSound:(int)sourceId;
+ * - (void)stopSound:(int)sourceId;
+ *
+ * Ambisonic soundfields can also be rotated about the listener's head in order
+ * to align the components of the soundfield with the visuals of the game/app.
+ *
+ * - (void)setSoundfieldRotation:(int)soundfieldId
+ *                           x:(float)x
+ *                           y:(float)y
+ *                           z:(float)z
+ *                           w:(float)w;
+ *
+ * *****************************************************************************
+ *
+ * Stereo Sounds
+ *
+ * The VrAudioEngine allows the direct non-spatialized playback of both stereo
+ * and mono audio. Such audio is often used for music or sound effects that
+ * should not be spatialized.
+ *
+ * A stereo sound can be created with a call to:
+ *
+ * - (int)createStereoSound:(const NSString*)filename;
  *
  * *****************************************************************************
  *
@@ -201,6 +243,15 @@
  * inside due to an attenuation of reverb and direct sound while sources far
  * outside of a room will not be audible.
  *
+ * The following method can be used to subtly adjust the reverb in a room by
+ * changing the gain/attenuation on the reverb, setting a multiplier on the
+ * reverberation time to control the reverb's length, or adjusting the balance
+ * between the low and high frequency components of the reverb.
+ *
+ * - (void)setRoomReverbAdjustments:(float)gain
+ *                       timeAdjust:(float)timeAdjust
+ *                 brightnessAdjust:(float)brightnessAdjust
+ *
  * *****************************************************************************
  *
  * Example usage:
@@ -218,19 +269,19 @@
  * bool playbackStarted = [gvrAudio start];
  *
  * // Create a Sound Object with the preloaded audio file.
- * int soundId = -1;
+ * int sourceId = -1;
  * if(filePreloaded) {
- *   soundId = [gvrAudio createSoundObject:filename];
+ *   sourceId = [gvrAudio createSoundObject:filename];
  * }
  *
  * // Begin Playback of the Sound Object.
- * if (soundId != -1) {
- *   [gvrAudio startSound:soundId loopingEnabled:true];
+ * if (sourceId != -1) {
+ *   [gvrAudio startSound:sourceId loopingEnabled:true];
  * }
  *
  * // Change the location and volume of the Sound Object.
- * if(soundId != -1) {
- *   [gvrAudio setSoundObjectPosition:soundId x:0.5f y:2.0f z:1.2f];
+ * if(sourceId != -1) {
+ *   [gvrAudio setSoundObjectPosition:sourceId x:0.5f y:2.0f z:1.2f];
  *   [gvrAudio setSoundVolume:0.75f];
  * }
  *
@@ -238,8 +289,8 @@
  * [gvrAudio setHeadPosition:0.5f y:0.5f z:0.5f];
  *
  * // Stop playback of the preloaded audio file.
- * if([gvrAudio isSoundPlaying:soundId]) {
- *   [gvrAudio stopSound:soundId];
+ * if([gvrAudio isSoundPlaying:sourceId]) {
+ *   [gvrAudio stopSound:sourceId];
  * }
  *
  * // Stop audio playback.
@@ -284,7 +335,7 @@ typedef enum materialName {
 /** Initialize with a rendering quality mode. Note, when the default init method
   * is used, the rendering quality is set to kRenderingModeBinauralHighQuality.
   *
-  * @param quality Chooses the configuration preset.
+  * @param rendering_mode Chooses the rendering quality mode.
   */
 - (id)initWithRenderingMode:(renderingMode)rendering_mode;
 
@@ -310,6 +361,13 @@ typedef enum materialName {
   */
 - (bool)preloadSoundFile:(const NSString*)filename;
 
+/** Unloads a previously preloaded sample from memory. Note that if the sample
+  * is currently used, the memory is freed at the moment playback stops.
+  *
+  * @param filename Name of the file used as identifier.
+  */
+- (void)unloadSoundFile:(const NSString*)filename;
+
 /** Returns a new sound object handle. Note that the sample needs to be
   * preloaded and may only contain a single audio channel (mono). The handle
   * automatically destroys itself at the moment the sound playback has stopped.
@@ -320,7 +378,7 @@ typedef enum materialName {
   */
 - (int)createSoundObject:(const NSString*)filename;
 
-/** Returns a new ambisonic sound field handle. Note that the sample needs to
+/** Returns a new ambisonic soundfield handle. Note that the sample needs to
   * be preloaded and must have 4 separate audio channels. The handle
   * automatically destroys itself at the moment the sound playback has stopped.
   *
@@ -331,19 +389,43 @@ typedef enum materialName {
   */
 - (int)createSoundfield:(const NSString*)filename;
 
+/** Returns a new non-spatialized stereo sound handle. Note that the sample must
+  * have at most two audio channels. Both mono and stereo audio files are
+  * supported. The handle automatically destroys itself at the moment the sound
+  * playback has stopped.
+  *
+  * @param filename The path/name of the file to be played.
+  * @return Id of new soundfield. Returns kInvalidId if the sound file could
+  *     not be loaded or if the number of required input channels does not
+  *     match.
+  */
+- (int)createStereoSound:(const NSString*)filename;
+
 /** Starts the playback of a sound.
   *
-  * @param soundId Id of the sound to be played.
+  * @param sourceId Id of the audio source to be played.
   * @param loopingEnabled Enables looped audio playback.
   */
-- (void)playSound:(int)soundId loopingEnabled:(bool)loopingEnabled;
+- (void)playSound:(int)sourceId loopingEnabled:(bool)loopingEnabled;
+
+/** Pauses the playback of a sound.
+  *
+  * @param sourceId Id of the audio source to be paused.
+  */
+- (void)pauseSound:(int)sourceId;
+
+/** Resumes the playback of a sound.
+  *
+  * @param sourceId Id of the audio source to be resumed.
+  */
+- (void)resumeSound:(int)sourceId;
 
 /** Stops the playback of a sound and destroys the corresponding Sound Object
   * or Soundfield.
   *
-  * @param soundId Id of the sound to be stopped.
+  * @param sourceId Id of the audio source to be stopped.
   */
-- (void)stopSound:(int)soundId;
+- (void)stopSound:(int)sourceId;
 
 /** Repositions an existing sound object.
   *
@@ -357,19 +439,33 @@ typedef enum materialName {
                              y:(float)y
                              z:(float)z;
 
+/** Rotates an existing Ambisonic soundfield.
+  *
+  * @param soundfieldId Id of the Ambisonic soundfield to be rotated.
+  * @param x X component of the quaternion describing the rotation.
+  * @param y Y component of the quaternion describing the rotation.
+  * @param z Z component of the quaternion describing the rotation.
+  * @param w W component of the quaternion describing the rotation.
+  */
+- (void)setSoundfieldRotation:(int)soundfieldId
+                             x:(float)x
+                             y:(float)y
+                             z:(float)z
+                             w:(float)w;
+
 /** Changes the volume of an existing sound.
   *
-  * @param soundId Id of the sound to be modified.
+  * @param sourceId Id of the audio source to be modified.
   * @param volume Volume value. Should range from 0 (mute) to 1 (max).
   */
-- (void)setSoundVolume:(int)soundId volume:(float)volume;
+- (void)setSoundVolume:(int)sourceId volume:(float)volume;
 
 /** Checks if a sound is playing.
   *
-  * @param soundId Id of the sound to be checked.
+  * @param sourceId Id of the audio source to be checked.
   * @return True if the sound is being played.
   */
-- (bool)isSoundPlaying:(int)soundId;
+- (bool)isSoundPlaying:(int)sourceId;
 
 /** Sets the head position.
   *
@@ -394,7 +490,8 @@ typedef enum materialName {
  */
 - (void)enableRoom:(bool)enable;
 
-/** Sets the room properties describing the dimensions and surface materials of a given room.
+/** Sets the room properties describing the dimensions and surface materials of
+ *  a given room.
  *
  * @param size_x Dimension along X axis.
  * @param size_y Dimension along Y axis.
@@ -409,5 +506,19 @@ typedef enum materialName {
             wall_material:(materialName)wall_material
          ceiling_material:(materialName)ceiling_material
            floor_material:(materialName)floor_material;
+
+/** Adjusts the properties of the current reverb, allowing changes to the
+ * reverb's gain, duration and low/high frequency balance.
+ *
+ * @param gain Reverb volume (linear) adjustment in range [0, 1] for
+ *     attenuation, range [1, inf) for gain boost.
+ * @param timeAdjust Reverb time adjustment multiplier to scale the
+ *     reverberation tail length. This value should be >= 0.
+ * @param brightness_adjust Reverb brightness adjustment that controls the
+ *     reverberation ratio across low and high frequency bands.
+ */
+- (void)setRoomReverbAdjustments:(float)gain
+                      timeAdjust:(float)timeAdjust
+                brightnessAdjust:(float)brightnessAdjust;
 
 @end

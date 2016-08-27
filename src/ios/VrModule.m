@@ -57,7 +57,11 @@
     
     self.isPaused = NO;
     
-    [self.videoView loadFromUrl:[[NSURL alloc] initWithString:playUrl]];
+    if ([playUrl hasPrefix:@"http"]) {
+        [self.videoView loadFromUrl:[[NSURL alloc] initWithString:playUrl]];
+    } else {
+        [self.videoView loadFromUrl:[[NSURL alloc] initFileURLWithPath:playUrl]];
+    }
 }
 
 #pragma mark - UIButton

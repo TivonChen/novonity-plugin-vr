@@ -1,12 +1,35 @@
 #import "GVRWidgetView.h"
 
+/** Enum for video image types. */
+typedef NS_ENUM(int, GVRVideoType) {
+  // Each video frame is a monocular equirectangular panorama.
+  // Each frame image is expected to cover 360 degrees along its horizontal axis.
+  kGVRVideoTypeMono = 1,
+
+  // Each video frame contains two vertically-stacked equirectangular panoramas. The top part of
+  // the frame contains pixels for the left eye, while the bottom part of the frame contains
+  // pixels for the right eye.
+  kGVRVideoTypeStereoOverUnder,
+};
+
 /**
  * Defines a player view that renders a 360 video using OpenGL.
  */
 @interface GVRVideoView : GVRWidgetView
 
-/** Load a local or remote video from a url and start playing. */
+/**
+ * Load a local or remote video from a url and start playing.
+ *
+ * The video is assumed to be of type |kGVRVideoTypeMono|.
+ */
 - (void)loadFromUrl:(NSURL*)videoUrl;
+
+/**
+ * Load a local or remote video from a url and start playing.
+ *
+ * The video type is set by |videoType|.
+ */
+- (void)loadFromUrl:(NSURL*)videoUrl ofType:(GVRVideoType)videoType;
 
 /** Pause the video. */
 - (void)pause;
