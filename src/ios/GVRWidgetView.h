@@ -1,34 +1,45 @@
+/**
+ * @file GVRWidgetView.h
+ * @brief GVRWidgetView.h File
+ */
+
 #import <UIKit/UIKit.h>
 
 @protocol GVRWidgetViewDelegate;
 
-/** The enum of various widget display modes. */
+/**
+ * @enum GVRWidgetDisplayMode
+ * The enum of various widget display modes.
+ */
 typedef NS_ENUM(NSInteger, GVRWidgetDisplayMode) {
-  // Widget is displayed embedded in other views.
+  /** Widget is displayed embedded in other views. */
   kGVRWidgetDisplayModeEmbedded = 1,
-  // Widget is displayed in fullscreen mono mode.
+  /** Widget is displayed in fullscreen mono mode. */
   kGVRWidgetDisplayModeFullscreen,
-  // Widget is displayed in fullscreen VR (stereo) mode.
+  /** Widget is displayed in fullscreen VR (stereo) mode. */
   kGVRWidgetDisplayModeFullscreenVR,
 };
 
 /**
  * Contains yaw and pitch angles corresponding to where the user is looking.
  *
- * yaw is the rotation along the vertical (y) axis. Values are in the [-180, 180] range with
- *   0 == looking straight at the initial image orientation
- *   90 == looking 90 degrees to the right
- *   -90 == looking 90 degrees to the left
- *   180 == -180 == looking in the direction opposite to the initial one
+ * `yaw` is the rotation along the vertical (y) axis. Values are in the
+ * [-180, 180] range with:
  *
- * pitch is the rotation along the right (x) axis previously rotated by yaw. Values are in the
- * [-90, 90] range with
- *   0 == looking straight, level with the ground
- *   90 == looking up
- *   -90 == looking down
+ * *  0 == looking straight at the initial image orientation
+ * *  90 == looking 90 degrees to the right
+ * *  -90 == looking 90 degrees to the left
+ * *  180 == -180 == looking in the direction opposite to the initial one
  *
- * When pitch approaches 90 or -90, yaw values are reset to zero as computing the yaw
- * values becomes numerically unstable.
+ * `pitch` is the rotation along the right (x) axis previously rotated by `yaw`.
+ * Values are in the [-90, 90] range with:
+ *
+ * *  0 == looking straight, level with the ground
+ * *  90 == looking up
+ * *  -90 == looking down
+ *
+ * When `pitch` approaches 90 or -90, `yaw` values are reset to zero as
+ * computing the yaw values becomes numerically unstable.
  */
 typedef struct {
   CGFloat yaw;
@@ -57,7 +68,7 @@ typedef struct {
 @property(nonatomic, readonly) GVRHeadRotation headRotation;
 
 /**
- * Controls the current |GVRWidgetDisplayMode| of the widget view.
+ * Controls the current ::GVRWidgetDisplayMode of the widget view.
  * Changing the value of this property is similar to pressing one of the fullscreen, cardboard
  * or back UI buttons.
  */
@@ -76,7 +87,7 @@ typedef struct {
  */
 - (void)widgetViewDidTap:(GVRWidgetView *)widgetView;
 
-/** Called when the widget view's display mode changes. See |GVRWidgetDisplayMode|. */
+/** Called when the widget view's display mode changes. See ::GVRWidgetDisplayMode. */
 - (void)widgetView:(GVRWidgetView *)widgetView
     didChangeDisplayMode:(GVRWidgetDisplayMode)displayMode;
 

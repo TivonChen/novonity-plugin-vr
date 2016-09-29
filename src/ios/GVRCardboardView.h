@@ -1,8 +1,15 @@
+/** @file GVRCardboardView.h
+ *  @brief GVRCardboardView.h File
+ */
+
 #import <UIKit/UIKit.h>
 
 #import "GVRHeadTransform.h"
 
-/** Cardboard specific user events. */
+/**
+ * @enum GVRUserEvent
+ * Cardboard specific user events.
+ */
 typedef NS_ENUM(NSInteger, GVRUserEvent) {
   /**
    * Back event triggered when the user taps the back button icon located at the top left of the
@@ -28,14 +35,14 @@ typedef NS_ENUM(NSInteger, GVRUserEvent) {
 @class GVRCardboardView;
 
 /**
- * Defines a delegate protocol for |GVRCardboardView|.
+ * Defines a delegate protocol for @c GVRCardboardView.
  */
 @protocol GVRCardboardViewDelegate<NSObject>
 
 @optional
 
 /**
- * Called when a user event is fired. See the documentation of |GVRUserEvent| to find out what
+ * Called when a user event is fired. See the documentation of #GVRUserEvent to find out what
  * thread is used to make this call.
  */
 - (void)cardboardView:(GVRCardboardView *)cardboardView didFireEvent:(GVRUserEvent)event;
@@ -58,7 +65,7 @@ typedef NS_ENUM(NSInteger, GVRUserEvent) {
 
 /**
  * Called on each frame to perform the required GL rendering. Delegate should set the GL viewport
- * and scissor it to the viewport returned from |GVRHeadTransforms|'s |viewportForEye| method.
+ * and scissor it to the viewport returned from the GVRHeadTransform::viewportForEye: method.
  * This method is called on the GL thread.
  */
 - (void)cardboardView:(GVRCardboardView *)cardboardView
@@ -80,20 +87,20 @@ typedef NS_ENUM(NSInteger, GVRUserEvent) {
  * Defines a view responsible for rendering graphics in VR mode. It is designed
  * to work in full screen mode with a landscape orientation. It provides all
  * the transition between mono and stereo (VR) modes. The view switches to
- * fullscreen VR mode when |vrModeEnabled| property is set to YES. The developer
- * should ensure |UISupportedInterfaceOrientations| key in the application's plist
- * file includes |UIInterfaceOrientationPortrait| and |UIRequiresFullscreen| is
+ * fullscreen VR mode when @c #vrModeEnabled property is set to YES. The developer
+ * should ensure @c UISupportedInterfaceOrientations key in the application's plist
+ * file includes @c UIInterfaceOrientationPortrait and @c UIRequiresFullscreen is
  * set to YES.
  *
  * The users of this class provide an implementation of the
- * |GVRCardboardViewDelegate| protocol through the |delegate| property. The
- * methods in the protocol |GVRCardboardViewDelegate| are called to perform
+ * @c GVRCardboardViewDelegate protocol through the @c delegate property. The
+ * methods in the protocol @c GVRCardboardViewDelegate are called to perform
  * the actual rendering of the graphics.
  *
  * In order to drive the rendering, the users of this class should call the
- * |render| method from their render loop. The thread used to call the
- * |render| method is refered to as the GL thread. This thread, in turn, calls
- * the method of the |GVRCardboardViewDelegate| protocol.
+ * @c render method from their render loop. The thread used to call the
+ * @c render method is refered to as the GL thread. This thread, in turn, calls
+ * the method of the @c GVRCardboardViewDelegate protocol.
  */
 @interface GVRCardboardView : UIView
 

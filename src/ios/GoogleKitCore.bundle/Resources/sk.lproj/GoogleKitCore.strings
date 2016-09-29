@@ -77,7 +77,7 @@
 "GoogleKitCoreReplyAllButton" = "Odpovedať všetkým";
 
 /* Label for a button for initiating a search operation. */
-"GoogleKitCoreSearchButton" = "Vyhľadať";
+"GoogleKitCoreSearchButton" = "Hľadať";
 
 /* Label for a button for showing settings related to the current screen. */
 "GoogleKitCoreSettingsButton" = "Nastavenia";

@@ -70,25 +70,25 @@
 "OnboardingIntroLine2" = "将您的手机与眼镜配对，打造最佳体验。";
 
 /* Label shown below the onboarding intro line to ask if they have a cardboard viewer. (40 chars) */
-"OnboardingNoViewerPrompt" = "没有 Cardboard 眼镜？";
+"OnboardingNoViewerPrompt" = "没有 VR 眼镜？";
 
 /* Button title shown next to the "no cardboard viewer" prompt to go get one. (15 chars) */
 "OnboardingGetCardboardButton" = "获取眼镜";
 
 /* Instruction for the user that they should now put their phone in Cardboard. This is a generic
  * instruction when the view type is not known. (50 chars) */
-"PlaceYourPhoneInCardboard" = "将您的手机放入 Cardboard 眼镜。";
+"PlaceYourPhoneInCardboard" = "将您的手机放入 VR 眼镜。";
 
 /* Instruction for the user that they should now put their phone in Cardboard. This is used as a
  * format string where the parameter is the view name. (50 chars) */
-"PlaceYourPhoneInViewerFormat" = "将您的手机放入 %1$@ 眼镜。";
+"PlaceYourPhoneInViewerFormat" = "将您的手机放入 VR 眼镜。";
 
 /* Title of settings view. (20 chars) */
 "SettingsNavTitleLabel" = "设置";
 
 /* Button label for enabling Cardboard viewer configurating sharing via the Cardboard app.
  * (40 chars) */
-"SettingsSyncLabel" = "与 Google Cardboard 同步";
+"SettingsSyncLabel" = "与VR同步";
 
 /* Format string for label that display the viewer currently configured. (30 chars) */
 "SettingsCurrentViewerLabelFormat" = "当前眼镜：%1$@";

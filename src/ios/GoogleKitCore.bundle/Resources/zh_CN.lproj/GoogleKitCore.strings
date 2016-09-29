@@ -74,7 +74,7 @@
 "GoogleKitCoreReplyButton" = "回复";
 
 /* Label for a button for replying to all recipients of a message. */
-"GoogleKitCoreReplyAllButton" = "全部回复";
+"GoogleKitCoreReplyAllButton" = "回复全部";
 
 /* Label for a button for initiating a search operation. */
 "GoogleKitCoreSearchButton" = "搜索";

@@ -27,6 +27,9 @@
         <config-file target="*-Info.plist" parent="UIFileSharingEnabled">
             <true/>
         </config-file>
+        <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+            <string>扫描二维码</string>
+        </config-file>
         <framework src="libstdc++.tbd"/>
         <framework src="CoreMedia.framework"/>
         <framework src="AVFoundation.framework"/>

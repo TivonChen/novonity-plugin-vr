@@ -1,17 +1,23 @@
+/**
+ * @file GVRHeadTransform.h
+ * @brief GVRHeadTransform.h File
+ */
+
 #import <GLKit/GLKit.h>
 
 /**
- * Enumeration of the left and right eyes, used to identify the correct rendering parameters needed
- * for stereo rendering.
+ * @enum GVREye
+ * Enumeration of the left and right eyes, used to identify the correct
+ * rendering parameters needed for stereo rendering.
  */
 typedef NS_ENUM(NSInteger, GVREye) {
-  kGVRLeftEye,
-  kGVRRightEye,
-  kGVRCenterEye,
+  kGVRLeftEye,    /**< Left eye. */
+  kGVRRightEye,   /**< Right eye. */
+  kGVRCenterEye,  /**< Center eye. */
 };
 
 /**
- * Defines a struct to hold half field of view angles, in degrees, for an |GVREye| eye.
+ * Defines a struct to hold half field of view angles, in degrees, for an @c GVREye eye.
  */
 typedef struct {
   CGFloat left;

@@ -1,59 +1,68 @@
+/**
+ * @file GVRAudioEngine.h
+ * @brief GVRAudioEngine.h File
+ */
+
 #import <Foundation/Foundation.h>
 
-/** High-level Google VR Audio Engine. The GVRAudioEngine allows the user
+/**
+ * High-level Google VR Audio Engine. The GVRAudioEngine allows the user
  * to spatialize sound sources in 3D space, including distance and height cues.
- * The GVRAudioEngine is capable of playing back spatial sound in two
- *  separate ways:
+ * The GVRAudioEngine is capable of playing back spatial sound in three
+ * separate ways:
  *
- * The first method, known as Sound Object rendering, allows the user to create
- * a virtual sound source in 3D space. These sources, while spatialized, are fed
- * with mono audio data.
- * The second method allows the user to play back Ambisonic soundfield
- * recordings. Ambisonic recordings are multi-channel audio files which are
- * spatialized all around the listener in 360 degrees. These can be thought of
- * as recorded or prebaked soundfields. They can be of great use for background
- * effects which sound perfectly spatial. Examples include rain noise, crowd
- * noise or even the sound of the ocean off to one side.
- *  The third method, referred to here as Stereo Sounds, allow the user to
- * directly play back non-spatialized mono or stereo audio files. This is useful
- * for music and other such audio.
+ * * The first method, known as **Sound Object** rendering, allows the user to
+ *   create a virtual sound source in 3D space. These sources, while
+ *   spatialized, are fed with mono audio data.
+ * * The second method allows the user to play back **Ambisonic soundfield**
+ *   recordings. Ambisonic recordings are multi-channel audio files which are
+ *   spatialized all around the listener in 360 degrees. These can be thought of
+ *   as recorded or prebaked soundfields. They can be of great use for
+ *   background effects which sound perfectly spatial. Examples include rain
+ *   noise, crowd noise or even the sound of the ocean off to one side.
+ * * The third method, referred to here as **Stereo Sounds**, allow the user to
+ *   directly play back non-spatialized mono or stereo audio files. This is
+ *   useful for music and other such audio.
  *
  * *****************************************************************************
  *
- * Construction:
+ * ### Construction
  *
- * - (id)initWithRenderingMode:(renderingMode)rendering_mode;
+ *     - (id)initWithRenderingMode:(renderingMode)rendering_mode;
  *
  * Alternatively, using init without parameters will default to binaural high
  * quality mode.
  *
- * RenderingMode is an enum which specifies a global rendering configuration
+ * #renderingMode is an enum which specifies a global rendering configuration
  * setting:
  *
- * - kRenderingModeStereoPanning:
- * Stereo panning of all Sound Objects. This disables HRTF-based rendering.
- * - kRenderingModeBinauralLowQuality:
- * This renders Sound Objects over a virtual array of 8 loudspeakers arranged in
- * a cube about the listener’s head. HRTF-based rendering is enabled.
- * - kRenderingModeBinauralHighQuality:
- * This renders Sound Objects over a virtual array of 16 loudspeakers arranged
- * in an approximate equidistribution about the listener’s HRTF-based rendering
- * is enabled.
+ * * `kRenderingModeStereoPanning`:
+ *   Stereo panning of all Sound Objects. This disables HRTF-based rendering.
+ * * `kRenderingModeBinauralLowQuality`:
+ *   This renders Sound Objects over a virtual array of 8 loudspeakers arranged
+ *   in a cube about the listener’s head. HRTF-based rendering is enabled.
+ * * `kRenderingModeBinauralHighQuality`:
+ *   This renders Sound Objects over a virtual array of 16 loudspeakers arranged
+ *   in an approximate equidistribution about the listener’s HRTF-based
+ *   rendering is enabled.
+ *
+ * To optimize the rendering performance for headphones *and* speaker playback,
+ * the speaker stereo mode can be enabled which automatically switches to stereo
+ * panning when headphones are not plugged in. Note that this can lead to
+ * varying CPU usage based on the audio output routing.
  *
  * If ARC is not enabled, a call to the dealloc method must be made. See the
  * Example Usage snippet below.
  *
- * *****************************************************************************
+ * Audio playback can be started and stopped by calling the methods #start and
+ * #stop:
  *
- * Audio playback can be started and stopped by calling the following
- * two methods:
- *
- * - (bool)start;
- * - (void)stop;
+ *     - (bool)start;
+ *     - (void)stop;
  *
  * *****************************************************************************
  *
- * Sound Files and Preloading
+ * ### Sound files and preloading
  *
  * Both mono sound files for use with Sound Objects and multi-channel Ambisonic
  * sound files can be preloaded into memory before playback or alternatively
@@ -61,13 +70,13 @@
  * especially if the same audio clip is likely to be played back many times. In
  * this case playback latency is also reduced.
  *
- * Sound files can be preloaded into memory by calling:
+ * Sound files can be preloaded into memory by calling #preloadSoundFile: :
  *
- * - (bool)preloadSoundFile:(const NSString*)filename;
+ *     - (bool)preloadSoundFile:(const NSString*)filename;
  *
- * Unused sound files can be unloaded with a call to:
+ * Unused sound files can be unloaded with a call to #unloadSoundFile: :
  *
- * - (void)unloadSoundFile:(const NSString*)filename;
+ *     - (void)unloadSoundFile:(const NSString*)filename;
  *
  * NOTE: If a sound object, soundfield or stereo sound is created with a file
  * that has not been preloaded, that audio will be streamed.
@@ -75,44 +84,64 @@
  *
  * *****************************************************************************
  *
- * Sound Objects
+ * ### Sound objects
  *
  * The GVRAudioEngine allows the user to create virtual Sound Objects which can
  * be placed anywhere in space around the listener. These Sound Objects take as
  * input mono audio data which is then spatialized.
  *
- * Sounds can be played back in 3D space with a call to the following function:
+ * Sounds can be played back in 3D space with a call to the #createSoundObject:
+ * function:
  *
- * - (int)createSoundObject:(const NSString*)filename;
+ *     - (int)createSoundObject:(const NSString*)filename;
  *
  * Here the filename serves as a handle on the audio file.
  *
  * This method returns an int handle which can be used to refer to the Sound
  * Object as it is manipulated.
  *
- * Playback of a Sound Object can be initiated with a call to:
+ * Playback of a Sound Object can be initiated with a call to
+ * #playSound:loopingEnabled: :
  *
- * - (void)startSound:(int)sourceId loopingEnabled:(bool)loopingEnabled;
+ *     - (void)playSound:(int)sourceId loopingEnabled:(bool)loopingEnabled;
  *
- * and paused and resumed via:
- * - (void)pauseSound:(int)sourceId;
- * - (void)resumeSound:(int)sourceId;
+ * and paused and resumed via #pauseSound: and #resumeSound: :
  *
- * The loopingEnabled boolean allows the user to specify whether the sound
+ *     - (void)pauseSound:(int)sourceId;
+ *     - (void)resumeSound:(int)sourceId;
+ *
+ * The `loopingEnabled` boolean allows the user to specify whether the sound
  * source should repeat continuously or should be played as a “single shot”.
  *
- * A Sound Object’s position in space or loudness can be altered by calling the
- * following methods:
+ * A Sound Object’s position in space can be altered by calling
+ * #setSoundfieldRotation:x:y:z:w: :
  *
- * - (void)setSoundObjectPosition:(int)soundObjectId
- *                              x:(float)x
- *                              y:(float)y
- *                              z:(float)z;
+ *     - (void)setSoundObjectPosition:(int)soundObjectId
+ *                                  x:(float)x
+ *                                  y:(float)y
+ *                                  z:(float)z;
  *
- * The three variables x, y, z denote the position in Cartesian world space
- * coordinates at which the Sound Object shall appear.
+ * The three variables `x`, `y`, `z` denote the position in Cartesian world
+ * space coordinates at which the Sound Object shall appear.
  *
- * - (void)setSoundVolume:(int)sourceId volume:(float)volume;
+ *
+ * The behavior of Sound Objects with respect to their distance from the
+ * listener can be controlled via calls to the following method:
+ *
+ *     - (void)setSoundObjectDistanceRolloffModel:(int)soundObjectId
+ *                                   rolloffModel:(distanceRolloffModel)rolloffModel
+ *                                    minDistance:(float)minDistance
+ *                                    maxDistance:(float)maxDistance;
+ *
+ *     - (void)setSoundObjectDistanceAttenuation:(int)soundObjectId
+ *                           distanceAttenuation:(float)distanceAttenuation;
+ *
+ * This enables a user to choose between logarithmic and linear distance rolloff
+ * methods, or to completely disable distance rolloff effects.
+ *
+ * A Sound Object’s loudness can be altered by calling #setSoundVolume:volume: :
+ *
+ *     - (void)setSoundVolume:(int)sourceId volume:(float)volume;
  *
  * The volume variable allows the user to control the loudness of individual
  * sources. This can be useful when some of your mono audio files are
@@ -122,24 +151,24 @@
  * Caution is encouraged when using very loud (e.g. 0dB FS normalized) mono
  * audio data, audio data that has been heavily dynamic range compressed or when
  * using multiple sources. In order to avoid clipping, individual sound object
- * volumes can be reduced by calling setSoundVolume() method.
+ * volumes can be reduced by calling the #setSoundVolume: method.
  *
  * The user can ensure that the Sound Object is currently playing before calling
- * the above methods with a call to:
+ * the above methods with a call to #isSoundPlaying: :
  *
- * - (bool)isSoundPlaying:(int)sourceId;
+ *     - (bool)isSoundPlaying:(int)sourceId;
  *
  * Once one is finished with a sound object and wish to remove it, simply place
- * a call to:
+ * a call to #stopSound: :
  *
- * - (void)stopSound:(int)sourceId;
+ *     - (void)stopSound:(int)sourceId;
  *
  * On making a call to this function the Sound Object is destroyed and the
  * corresponding integer handle no longer refers to a valid Sound Object.
  *
  * *****************************************************************************
  *
- * Ambisonic Soundfields
+ * ### Ambisonic soundfields
  *
  * The GVRAudioEngine is also designed to play back Ambisonic
  * soundfields. These are captured or pre rendered 360 degree recordings. It is
@@ -151,186 +180,253 @@
  * or even for pre baking 3D audio to reduce rendering costs.
  *
  * A preloaded multi-channel Ambisonic sound file can be used to create a
- * soundfield with a call to:
+ * soundfield with a call to #createSoundfield: :
  *
- * - (int)createSoundfield:(const NSString*)filename;
+ *     - (int)createSoundfield:(const NSString*)filename;
  *
  * Once again an integer handle is returned allowing the user to begin playback
- * of the soundfield, to alter the soundfield’s volume or to stop soundfield
+ * of the soundfield, to alter the soundfield’s volume, or to stop soundfield
  * playback and as such destroy the object.
  *
- *
- * - (void)startSound:(int)soudnObjectId loopingEnabled:(bool)loopingEnabled;
- * - (void)setSoundVolume:(int)sourceId volume:(float)volume;
- * - (void)pauseSound:(int)sourceId;
- * - (void)resumeSound:(int)sourceId;
- * - (void)stopSound:(int)sourceId;
+ *     - (void)playSound:(int)soundObjectId loopingEnabled:(bool)loopingEnabled;
+ *     - (void)setSoundVolume:(int)sourceId volume:(float)volume;
+ *     - (void)pauseSound:(int)sourceId;
+ *     - (void)resumeSound:(int)sourceId;
+ *     - (void)stopSound:(int)sourceId;
  *
  * Ambisonic soundfields can also be rotated about the listener's head in order
- * to align the components of the soundfield with the visuals of the game/app.
+ * to align the components of the soundfield with the visuals of the game/app
+ * using #setSoundfieldRotation:x:y:z:w:.
  *
- * - (void)setSoundfieldRotation:(int)soundfieldId
- *                           x:(float)x
- *                           y:(float)y
- *                           z:(float)z
- *                           w:(float)w;
+ *     - (void)setSoundfieldRotation:(int)soundfieldId
+ *                               x:(float)x
+ *                               y:(float)y
+ *                               z:(float)z
+ *                               w:(float)w;
  *
  * *****************************************************************************
  *
- * Stereo Sounds
+ * ### Stereo sounds
  *
  * The VrAudioEngine allows the direct non-spatialized playback of both stereo
  * and mono audio. Such audio is often used for music or sound effects that
  * should not be spatialized.
  *
- * A stereo sound can be created with a call to:
+ * A stereo sound can be created with a call to #createStereoSound: :
  *
- * - (int)createStereoSound:(const NSString*)filename;
+ *     - (int)createStereoSound:(const NSString*)filename;
  *
  * *****************************************************************************
  *
- * Listener position and Rotation.
+ * ### Listener position and rotation
  *
  * In order to ensure that the audio in your application reacts to user head
  * movement it is important to update head orientation in the graphics callback
  * using the head orientation matrix.
  *
  * The following two methods control the listener’s head orientation in terms of
- * audio:
+ * audio. #setHeadPosition:y:z: :
  *
- * - (void)setHeadPosition:(float)x y:(float)y z:(float)z;
+ *     - (void)setHeadPosition:(float)x y:(float)y z:(float)z;
  *
- * where x, y and z are cartesian world space coordinates
+ * where `x`, `y` and `z` are cartesian world space coordinates
  *
- * and
+ * and #setHeadRotation:y:z:w: :
  *
- * - (void)setHeadRotation:(float)x y:(float)y z:(float)z w:(float)w;
+ *     - (void)setHeadRotation:(float)x y:(float)y z:(float)z w:(float)w;
  *
- * Here x, y, z and w are the components of a quaternion.
+ * where `x`, `y`, `z` and `w` are the components of a quaternion.
  *
  * *****************************************************************************
- * // Room effects.
+ *
+ * ### Room effects
  *
  * The GVRAudioEngine provides a reverb engine enabling the user to
  * create arbitrary room effects by specifying the size of a room and a material
- * for each surface of the room from the |SurfaceMaterials| enum. Each of these
+ * for each surface of the room from the `#materialName` enum. Each of these
  * surface materials has unique absorption properties which differ with
  * frequency. The room created will be centred around the listener. Note that in
  * the GVRAudioEngine the unit of distance is meters.
  *
- * The following methods are used to control room effects:
+ * The following methods are used to control room effects. #enableRoom: :
  *
- * - (void)enableRoom:(bool)enable
+ *     - (void)enableRoom:(bool)enable
  *
- * which enables or disables room effects with smooth transitions.
+ * enables or disables room effects with smooth transitions,
  *
  * and
+ * #setRoomProperties:size_y:size_z:wall_material:ceiling_material:floor_material:
+ * :
  *
- * - (void)setRoomProperties:(float)size_x
- *                    size_y:(float)size_y
- *                    size_z:(float)size_z
- *             wall_material:(MaterialName)wall_material
- *          ceiling_material:(MaterialName)ceiling_material
- *            floor_material:(MaterialName)floor_material;
+ *     - (void)setRoomProperties:(float)size_x
+ *                        size_y:(float)size_y
+ *                        size_z:(float)size_z
+ *                 wall_material:(materialName)wall_material
+ *              ceiling_material:(materialName)ceiling_material
+ *                floor_material:(materialName)floor_material;
  *
- * which allows the user to describe the room based on its dimensions (size_x,
- * size_y, size_z), and its surface properties. For example one can expect very
- * large rooms to be more reverberant than smaller rooms and for a room with
- * brick surfaces to be more reverberant than one with heavy curtains on every
- * surface.
+ * allows the user to describe the room based on its dimensions (`size_x`,
+ * `size_y`, `size_z`), and its surface properties. For example one can expect
+ * very large rooms to be more reverberant than smaller rooms and for a room
+ * with brick surfaces to be more reverberant than one with heavy curtains on
+ * every surface.
  *
  * NB: Sources located outside of a room will sound quite different from those
  * inside due to an attenuation of reverb and direct sound while sources far
  * outside of a room will not be audible.
  *
- * The following method can be used to subtly adjust the reverb in a room by
- * changing the gain/attenuation on the reverb, setting a multiplier on the
- * reverberation time to control the reverb's length, or adjusting the balance
- * between the low and high frequency components of the reverb.
+ * #setRoomReverbAdjustments:timeAdjust:brightnessAdjust: can be used to subtly
+ * adjust the reverb in a room by changing the gain/attenuation on the reverb,
+ * setting a multiplier on the reverberation time to control the reverb's
+ * length, or adjusting the balance between the low and high frequency
+ * components of the reverb.
  *
- * - (void)setRoomReverbAdjustments:(float)gain
- *                       timeAdjust:(float)timeAdjust
- *                 brightnessAdjust:(float)brightnessAdjust
+ *     - (void)setRoomReverbAdjustments:(float)gain
+ *                           timeAdjust:(float)timeAdjust
+ *                     brightnessAdjust:(float)brightnessAdjust
  *
  * *****************************************************************************
  *
- * Example usage:
+ * ### Example usage
  *
- * // Initialize a GVRAudioEngine in binaural high quality rendering mode.
- * GVRAudioEngine *gvrAudio;
- * gvrAudio = [[GVRAudioEngine alloc]
- *                   initWithRenderingMode:kRenderingModeBinauralHighQuality];
+ *     // Initialize a GVRAudioEngine in binaural high quality rendering mode.
+ *     GVRAudioEngine *gvrAudio;
+ *     gvrAudio = [[GVRAudioEngine alloc]
+ *                       initWithRenderingMode:kRenderingModeBinauralHighQuality];
  *
- * // Load an audio file (compressed or uncompressed) from the main bundle.
- * NSString filename = @"mono_audio_file.mp3";
- * bool filePreloaded = [gvrAudio preloadSoundFile:filename];
+ *     // Load an audio file (compressed or uncompressed) from the main bundle.
+ *     NSString filename = @"mono_audio_file.mp3";
+ *     bool filePreloaded = [gvrAudio preloadSoundFile:filename];
  *
- * // Start audio playback.
- * bool playbackStarted = [gvrAudio start];
+ *     // Start audio playback.
+ *     bool playbackStarted = [gvrAudio start];
  *
- * // Create a Sound Object with the preloaded audio file.
- * int sourceId = -1;
- * if(filePreloaded) {
- *   sourceId = [gvrAudio createSoundObject:filename];
- * }
+ *     // Create a Sound Object with the preloaded audio file.
+ *     int sourceId = -1;
+ *     if(filePreloaded) {
+ *       sourceId = [gvrAudio createSoundObject:filename];
+ *     }
  *
- * // Begin Playback of the Sound Object.
- * if (sourceId != -1) {
- *   [gvrAudio startSound:sourceId loopingEnabled:true];
- * }
+ *     // Begin Playback of the Sound Object.
+ *     if (sourceId != -1) {
+ *       [gvrAudio playSound:sourceId loopingEnabled:true];
+ *     }
  *
- * // Change the location and volume of the Sound Object.
- * if(sourceId != -1) {
- *   [gvrAudio setSoundObjectPosition:sourceId x:0.5f y:2.0f z:1.2f];
- *   [gvrAudio setSoundVolume:0.75f];
- * }
+ *     // Change the location and volume of the Sound Object.
+ *     if(sourceId != -1) {
+ *       [gvrAudio setSoundObjectPosition:sourceId x:0.5f y:2.0f z:1.2f];
+ *       [gvrAudio setSoundVolume:0.75f];
+ *     }
  *
- * // Change the listener position.
- * [gvrAudio setHeadPosition:0.5f y:0.5f z:0.5f];
+ *     // Change the listener position.
+ *     [gvrAudio setHeadPosition:0.5f y:0.5f z:0.5f];
  *
- * // Stop playback of the preloaded audio file.
- * if([gvrAudio isSoundPlaying:sourceId]) {
- *   [gvrAudio stopSound:sourceId];
- * }
+ *     // Stop playback of the preloaded audio file.
+ *     if([gvrAudio isSoundPlaying:sourceId]) {
+ *       [gvrAudio stopSound:sourceId];
+ *     }
  *
- * // Stop audio playback.
- * [gvrAudio stop];
+ *     // Stop audio playback.
+ *     [gvrAudio stop];
  *
- * // If ARC is not enabled.
- * [gvrAudio dealloc];
+ *     // If ARC is not enabled.
+ *     [gvrAudio dealloc];
  */
 @interface GVRAudioEngine : NSObject
 
+/**
+ * @enum renderingMode
+ * The rendering mode to use for sound objects.
+ */
 typedef enum renderingMode {
+  /**
+   * Stereo panning of all Sound Objects. This disables HRTF-based rendering.
+   */
   kRenderingModeStereoPanning,
+  /**
+   * This renders Sound Objects over a virtual array of 8 loudspeakers arranged
+   * in a cube about the listener’s head. HRTF-based rendering is enabled.
+   */
   kRenderingModeBinauralLowQuality,
+  /**
+   * This renders Sound Objects over a virtual array of 16 loudspeakers arranged
+   * in an approximate equidistribution about the listener’s HRTF-based
+   * rendering is enabled.
+   */
   kRenderingModeBinauralHighQuality,
 } renderingMode;
 
+/**
+ * @enum materialName
+ * The surface material to use for room effects.
+ */
 typedef enum materialName {
+  /** Acoustically transparent material, reflects no sound. */
   kTransparent,
+  /** Acoustic ceiling tiles, absorbs most frequencies. */
   kAcousticCeilingTiles,
+  /** Bare brick, relatively reflective. */
   kBrickBare,
+  /** Painted brick. */
   kBrickPainted,
+  /** Coarse surface concrete block. */
   kConcreteBlockCoarse,
+  /** Painted concrete block. */
   kConcreteBlockPainted,
+  /** Heavy curtains. */
   kCurtainHeavy,
+  /** Fiber glass insulation. */
   kFiberGlassInsulation,
+  /** Thin glass. */
   kGlassThin,
+  /** Thick glass. */
   kGlassThick,
+  /** Grass. */
   kGrass,
+  /** Linoleum on concrete. */
   kLinoleumOnConcrete,
+  /** Marble. */
   kMarble,
+  /** Galvanized sheet metal. */
+  kMetal,
+  /** Wooden parquet on concrete. */
   kParquetOnConcrete,
+  /** Rough plaster surface. */
   kPlasterRough,
+  /** Smooth plaster surface. */
   kPlasterSmooth,
+  /** Plywood panel. */
   kPlywoodPanel,
+  /** Polished concrete or tile surface. */
   kPolishedConcreteOrTile,
+  /** Sheet rock. */
   kSheetrock,
+  /** Surface of water or ice. */
   kWaterOrIceSurface,
+  /** Wooden ceiling. */
   kWoodCeiling,
+  /** Wood paneling. */
   kWoodPanel
 } materialName;
+
+/**
+ * @enum distanceRolloffModel
+ * The distance rolloff model to be used for a given sound object.
+ */
+typedef enum distanceRolloffModel {
+  /**
+   * Logarithmic distance rolloff model.
+   */
+  kLogarithmic,
+  /**
+   * Linear distance rolloff model.
+   */
+  kLinear,
+  /**
+   * No distance rolloff will be applied.
+   */
+  kNone,
+} distanceRolloffModel;
 
 /** Initialize with a rendering quality mode. Note, when the default init method
   * is used, the rendering quality is set to kRenderingModeBinauralHighQuality.
@@ -352,6 +448,16 @@ typedef enum materialName {
  *  background operations outside of the audio thread.
  */
 - (void)update;
+
+/**
+ * Enables the stereo speaker mode. It enforces stereo-panning when headphones
+ * are *not* plugged into the phone. This helps to avoid HRTF-based coloring
+ * effects and reduces computational complexity when speaker playback is
+ * active. By default the stereo speaker mode optimization is disabled.
+ *
+ * @param enable True to enable the stereo speaker mode.
+ */
+- (void)enableStereoSpeakerMode:(bool)enable;
 
 /** Preloads a local sound file. Note that the local file access method depends
   * on the target platform.
@@ -438,6 +544,23 @@ typedef enum materialName {
                              x:(float)x
                              y:(float)y
                              z:(float)z;
+
+/**
+  * Sets the given sound object source's distance attenuation method with
+  * minimum and maximum distances. Maximum distance must be greater than the
+  * minimum distance for the method to be set.
+  *
+  * @param soundObjectId Id of sound object source.
+  * @param rolloffModel The distanceRolloffModel to be used for the given. Note
+  *     setting the rolloff model to distanceRolloffModel::kNone will allow
+  *     distance attenuation to be set manually.
+  * @param minDistance Minimum distance to apply distance attenuation method.
+  * @param maxDistance Maximum distance to apply distance attenuation method.
+  */
+- (void)setSoundObjectDistanceRolloffModel:(int)soundObjectId
+                              rolloffModel:(distanceRolloffModel)rolloffModel
+                               minDistance:(float)minDistance
+                               maxDistance:(float)maxDistance;
 
 /** Rotates an existing Ambisonic soundfield.
   *

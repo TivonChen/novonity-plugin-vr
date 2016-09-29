@@ -47,7 +47,7 @@
 "GoogleKitCoreDeleteButton" = "حذف";
 
 /* Label for a button for composing an email. */
-"GoogleKitCoreEmailButton" = "ایمیل";
+"GoogleKitCoreEmailButton" = "رایانامه";
 
 /* Label for a button for accessing help content. */
 "GoogleKitCoreHelpButton" = "راهنما";
