@@ -15,6 +15,7 @@
   "keywords": [
     "vr",
     "ecosystem:cordova",
+    "cordova-android",
     "cordova-ios"
   ],
   "author": "TivonChen",
