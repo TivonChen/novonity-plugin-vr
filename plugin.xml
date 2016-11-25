@@ -3,58 +3,90 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="novonity-plugin-vr"
-        version="1.1.0">
+        version="1.2.0">
 
-    <name>vr</name>
-    <description>vr plugin</description>
-    <license>MIT</license>
-    <keywords>vr</keywords>
+  <name>vr</name>
+  <description>vr plugin</description>
+  <license>MIT</license>
+  <keywords>vr</keywords>
 
-    <js-module src="www/vr.js" name="vr">
-        <clobbers target="vr"/>
-    </js-module>
+  <js-module src="www/vr.js" name="vr">
+    <clobbers target="vr"/>
+  </js-module>
 
-    <!-- ios -->
-    <platform name="ios">
-        <config-file target="config.xml" parent="/*">
-            <feature name="vr">
-                <param name="ios-package" value="VrModule"/>
-            </feature>
-        </config-file>
-        <config-file target="*-Info.plist" parent="CFBundleDevelopmentRegion">
-            <string>zh_CN</string>
-        </config-file>
-        <config-file target="*-Info.plist" parent="UIFileSharingEnabled">
-            <true/>
-        </config-file>
-        <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
-            <string>扫描二维码</string>
-        </config-file>
-        <framework src="libstdc++.tbd"/>
-        <framework src="CoreMedia.framework"/>
-        <framework src="AVFoundation.framework"/>
-        <framework src="CoreMotion.framework"/>
-        <framework src="MediaPlayer.framework"/>
-        <framework src="GLKit.framework"/>
-        <framework src="AudioToolBox.framework"/>
+  <!-- ios -->
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="Vr">
+        <param name="ios-package" value="VrModule"/>
+      </feature>
+    </config-file>
+    <config-file target="*-Info.plist" parent="CFBundleDevelopmentRegion">
+      <string>zh_CN</string>
+    </config-file>
+    <config-file target="*-Info.plist" parent="UIFileSharingEnabled">
+      <true/>
+    </config-file>
+    <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+      <string>扫描二维码</string>
+    </config-file>
+    <framework src="libstdc++.tbd"/>
+    <framework src="CoreMedia.framework"/>
+    <framework src="AVFoundation.framework"/>
+    <framework src="CoreMotion.framework"/>
+    <framework src="MediaPlayer.framework"/>
+    <framework src="GLKit.framework"/>
+    <framework src="AudioToolBox.framework"/>
 
-        <source-file src="src/ios/libCardboardSDK.a" framework="true"/>
+    <source-file src="src/ios/libCardboardSDK.a" framework="true"/>
 
-        <resource-file src="src/ios/CardboardSDK.bundle"/>
-        <resource-file src="src/ios/GoogleKitCore.bundle"/>
-        <resource-file src="src/ios/GoogleKitDialogs.bundle"/>
-        <resource-file src="src/ios/GoogleKitHUD.bundle"/>
-        <resource-file src="src/ios/MaterialRobotoFontLoader.bundle"/>
+    <resource-file src="src/ios/CardboardSDK.bundle"/>
+    <resource-file src="src/ios/GoogleKitCore.bundle"/>
+    <resource-file src="src/ios/GoogleKitDialogs.bundle"/>
+    <resource-file src="src/ios/GoogleKitHUD.bundle"/>
+    <resource-file src="src/ios/MaterialRobotoFontLoader.bundle"/>
 
-        <header-file src="src/ios/GVRAudioEngine.h"/>
-        <header-file src="src/ios/GVRCardboardView.h"/>
-        <header-file src="src/ios/GVRHeadTransform.h"/>
-        <header-file src="src/ios/GVROverlayView.h"/>
-        <header-file src="src/ios/GVRPanoramaView.h"/>
-        <header-file src="src/ios/GVRVideoView.h"/>
-        <header-file src="src/ios/GVRWidgetView.h"/>
+    <header-file src="src/ios/GVRAudioEngine.h"/>
+    <header-file src="src/ios/GVRCardboardView.h"/>
+    <header-file src="src/ios/GVRHeadTransform.h"/>
+    <header-file src="src/ios/GVROverlayView.h"/>
+    <header-file src="src/ios/GVRPanoramaView.h"/>
+    <header-file src="src/ios/GVRVideoView.h"/>
+    <header-file src="src/ios/GVRWidgetView.h"/>
 
-        <header-file src="src/ios/VrModule.h"/>
-        <source-file src="src/ios/VrModule.m"/>
-    </platform>
+    <header-file src="src/ios/VrModule.h"/>
+    <source-file src="src/ios/VrModule.m"/>
+  </platform>
+
+  <!--android-->
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="Vr">
+        <param name="android-package" value="com.novonity.plugin.vr.Vr"/>
+      </feature>
+    </config-file>
+    <config-file target="AndroidManifest.xml" parent="/*">
+      <uses-permission android:name="android.permission.INTERNET"/>
+      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    </config-file>
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <activity android:name="com.novonity.plugin.vr.VideoActivity"
+                android:configChanges="orientation|keyboardHidden"
+                android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+                android:windowSoftInputMode="stateAlwaysHidden">
+        <intent-filter>
+          <action android:name="android.intent.action.MAIN"/>
+          <category android:name="android.intent.category.DEFAULT"/>
+        </intent-filter>
+      </activity>
+    </config-file>
+    <framework src="src/android/vr.gradle" custom="true" type="gradleReference"/>
+    <resource-file src="src/android/libs/common.aar" target="libs/common.aar"/>
+    <resource-file src="src/android/libs/commonwidget.aar" target="libs/commonwidget.aar"/>
+    <resource-file src="src/android/libs/videowidget.aar" target="libs/videowidget.aar"/>
+    <source-file src="src/android/Vr.java" target-dir="src/com/novonity/plugin/vr"/>
+    <source-file src="src/android/view/VideoActivity.java" target-dir="src/com/novonity/plugin/vr"/>
+    <source-file src="src/android/res/vr_video_main.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/ic_menu_back.png" target-dir="res/drawable"/>
+  </platform>
 </plugin>

@@ -7,11 +7,11 @@ var VR = function () {
 };
 
 VR.prototype.startPlaying = function (url, successCallback, errorCallback) {
-    exec(successCallback, errorCallback, "vr", "startPlaying", [url]);
+    exec(successCallback, errorCallback, "Vr", "startPlaying", [url]);
 };
 
 VR.prototype.stopPlaying = function (successCallback, errorCallback) {
-    exec(successCallback, errorCallback, "vr", "stopPlaying", []);
+    exec(successCallback, errorCallback, "Vr", "stopPlaying", []);
 };
 
 var vr = new VR();
