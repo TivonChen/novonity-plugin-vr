@@ -12,11 +12,6 @@
 @synthesize isPaused;
 @synthesize currentCallbackId;
 
-//屏幕长度
-#define ScreenHeight    [[UIScreen mainScreen] bounds].size.height
-//屏幕宽度
-#define ScreenWidth     [[UIScreen mainScreen] bounds].size.width
-
 - (void)pluginInitialize {
 }
 
@@ -40,19 +35,11 @@
     
     NSLog(@"VrModule startPlaying = %@", playUrl);
     
-    NSString *strResourcesBundle = [[NSBundle mainBundle] pathForResource:@"CardboardSDK" ofType:@"bundle"];
-    NSString *strButton = [[NSBundle bundleWithPath:strResourcesBundle] pathForResource:@"ic_arrow_back_white@3x" ofType:@"png"];
-    UIImage *buttonImage = [UIImage imageWithContentsOfFile:strButton];
-    
-    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 60)];
-    [button setImage:buttonImage forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(buttonClick) forControlEvents:UIControlEventTouchUpInside];
-    
-    self.videoView  = [[GVRVideoView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
-    [self.videoView addSubview:button];
+    self.videoView  = [[GVRVideoView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     self.videoView.delegate = self;
     self.videoView.enableFullscreenButton = YES;
     self.videoView.enableCardboardButton = YES;
+    self.videoView.displayMode = kGVRWidgetDisplayModeFullscreen;
     [self.viewController.view addSubview:self.videoView];
     
     self.isPaused = NO;
@@ -83,6 +70,15 @@
 - (void)widgetView:(GVRWidgetView *)widgetView didLoadContent:(id)content {
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.currentCallbackId];
+}
+
+
+- (void)widgetView:(GVRWidgetView *)widgetView
+didChangeDisplayMode:(GVRWidgetDisplayMode)displayMode{
+    if (displayMode != kGVRWidgetDisplayModeFullscreen && displayMode != kGVRWidgetDisplayModeFullscreenVR){
+        // Full screen closed, closing the view
+        [self stopVideo];
+    }
 }
 
 - (void)widgetView:(GVRWidgetView *)widgetView
