@@ -12,6 +12,6 @@ See [GVR](https://developers.google.com/vr) for more information.
 call the function below directly
 
 `vr.startPlaying(url)`
-* url: the vr video url
+* url: the vr video url, it also can be the fullpath of local video.
 
 `vr.stopPlaying()`
