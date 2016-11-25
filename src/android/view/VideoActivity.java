@@ -8,9 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.vr.sdk.widgets.common.VrWidgetView;
 import com.novonity.vr.R;
 
 import com.google.vr.sdk.widgets.video.VrVideoEventListener;
@@ -21,10 +21,9 @@ public class VideoActivity extends Activity {
 
     private static final String TAG = VideoActivity.class.getSimpleName();
 
-    private ImageView back_img;
     protected VrVideoView videoWidgetView;
-    private boolean isMuted;
     private boolean isPaused = false;
+    private Activity that = null;
 
     /**
      * Preserve the video's state when rotating the phone.
@@ -57,24 +56,31 @@ public class VideoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vr_video_main);
 
-        back_img = (ImageView) findViewById(R.id.back_img);
-        back_img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
         videoWidgetView = (VrVideoView) findViewById(R.id.video_view);
+        videoWidgetView.setDisplayMode(VrVideoView.DisplayMode.FULLSCREEN_MONO);
+        videoWidgetView.setVisibility(View.INVISIBLE);
         videoWidgetView.setEventListener(new ActivityEventListener());
         loadVideoStatus = LOAD_VIDEO_STATUS_UNKNOWN;
 
+        that = this;
         handleIntent(getIntent());
     }
 
-    private void setIsMuted(boolean isMuted) {
-        this.isMuted = isMuted;
-        videoWidgetView.setVolume(isMuted ? 0.0f : 1.0f);
+    /**
+     * Called when the Activity is already running and it's given a new intent.
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.i(TAG, this.hashCode() + ".onNewIntent()");
+        // Save the intent. This allows the getIntent() call in onCreate() to use this new Intent during
+        // future invocations.
+        setIntent(intent);
+        // Load the new image.
+        handleIntent(intent);
+    }
+
+    public int getLoadVideoStatus() {
+        return loadVideoStatus;
     }
 
     private void handleIntent(Intent intent) {
@@ -162,6 +168,7 @@ public class VideoActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        videoWidgetView.shutdown();
         super.onDestroy();
     }
 
@@ -187,6 +194,14 @@ public class VideoActivity extends Activity {
             loadVideoStatus = LOAD_VIDEO_STATUS_SUCCESS;
         }
 
+        @Override
+        public void onDisplayModeChanged(int newDisplayMode) {
+            if (newDisplayMode != VrWidgetView.DisplayMode.FULLSCREEN_STEREO &&
+                    newDisplayMode != VrWidgetView.DisplayMode.FULLSCREEN_MONO){
+                videoWidgetView.setVisibility(View.INVISIBLE);
+                that.finish();
+            }
+        }
         /**
          * Called by video widget on the UI thread on any asynchronous error.
          */
