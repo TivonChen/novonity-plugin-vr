@@ -39,6 +39,8 @@
     self.videoView.delegate = self;
     self.videoView.enableFullscreenButton = YES;
     self.videoView.enableCardboardButton = YES;
+    self.videoView.enableInfoButton = NO;
+    self.videoView.hidesTransitionView = YES;
     self.videoView.displayMode = kGVRWidgetDisplayModeFullscreen;
     [self.viewController.view addSubview:self.videoView];
     
@@ -51,16 +53,11 @@
     }
 }
 
-#pragma mark - UIButton
-- (void) buttonClick {
-    [self stopVideo];
-}
-
 #pragma mark - GVRVideoViewDelegate
 
 - (void)widgetViewDidTap:(GVRWidgetView *)widgetView {
     if (self.isPaused) {
-        [self.videoView resume];
+        [self.videoView play];
     } else {
         [self.videoView pause];
     }
@@ -68,6 +65,7 @@
 }
 
 - (void)widgetView:(GVRWidgetView *)widgetView didLoadContent:(id)content {
+    [self.videoView play];
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.currentCallbackId];
 }
@@ -96,7 +94,7 @@ didFailToLoadContent:(id)content
         NSLog(@"videoView didUpdatePosition: %f", position);
         [self stopVideo];
         // [self.videoView seekTo:0];
-        // [self.videoView resume];
+        // [self.videoView play];
     }
 }
 

@@ -46,14 +46,17 @@ typedef NS_ENUM(int, GVRVideoType) {
 /** Pause the video. */
 - (void)pause;
 
-/** Resume the video. */
-- (void)resume;
+/** Start or resume the video. */
+- (void)play;
 
 /** Stop the video. */
 - (void)stop;
 
 /** Get the duration of the video. */
 - (NSTimeInterval)duration;
+
+/** Gets the playable duration of the buffered video. */
+- (NSTimeInterval)playableDuration;
 
 /** Seek to the target time position of the video. */
 - (void)seekTo:(NSTimeInterval)position;

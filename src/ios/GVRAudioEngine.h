@@ -474,9 +474,10 @@ typedef enum distanceRolloffModel {
   */
 - (void)unloadSoundFile:(const NSString*)filename;
 
-/** Returns a new sound object handle. Note that the sample needs to be
-  * preloaded and may only contain a single audio channel (mono). The handle
-  * automatically destroys itself at the moment the sound playback has stopped.
+/** Returns a new sound object handle. Note that the sample should only contain
+  * a single audio channel (stereo sources are automatically downmixed to mono).
+  * The handle automatically destroys itself at the moment the sound playback
+  * has stopped.
   *
   * @param filename The path/name of the file to be played.
   * @return Id of new sound object. Returns kInvalidId if the sound file could

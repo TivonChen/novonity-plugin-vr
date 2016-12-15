@@ -1,21 +1,22 @@
 dependencies {
-  compile(name:'common', ext:'aar')
-  compile(name:'commonwidget', ext:'aar')
-  compile(name:'videowidget', ext:'aar')
-
-  compile 'com.google.android.exoplayer:exoplayer:r1.5.10'
-  compile 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
+    compile 'com.google.vr:sdk-videowidget:1.10.0'
 }
 
-repositories{
-  flatDir{
-    dirs 'libs'
-  }
+repositories {
+    // For GVR components, the official source of the .aars is the Google
+    // repository.
+    maven {
+        url "http://google.bintray.com/googlevr"
+    }
+    // We also use components from JCenter.
+    jcenter()
+    // You can also use a local Maven repository if desired.
+    mavenLocal()
 }
 
 android {
     packagingOptions {
-      exclude 'META-INF/NOTICE'
-      exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
     }
- }
+}

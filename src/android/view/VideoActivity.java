@@ -59,6 +59,8 @@ public class VideoActivity extends Activity {
         videoWidgetView = (VrVideoView) findViewById(R.id.video_view);
         videoWidgetView.setDisplayMode(VrVideoView.DisplayMode.FULLSCREEN_MONO);
         videoWidgetView.setVisibility(View.INVISIBLE);
+        videoWidgetView.setInfoButtonEnabled(false);
+        videoWidgetView.setTransitionViewEnabled(false);
         videoWidgetView.setEventListener(new ActivityEventListener());
         loadVideoStatus = LOAD_VIDEO_STATUS_UNKNOWN;
 
