@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="novonity-plugin-vr"
-        version="1.3.0">
+        version="1.3.1">
 
   <name>vr</name>
   <description>vr plugin</description>
@@ -22,13 +22,13 @@
       </feature>
     </config-file>
     <config-file target="*-Info.plist" parent="CFBundleDevelopmentRegion">
-      <string>zh_CN</string>
+      <string>en_US</string>
     </config-file>
     <config-file target="*-Info.plist" parent="UIFileSharingEnabled">
       <true/>
     </config-file>
     <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
-      <string>扫描二维码</string>
+      <string>App takes panorama photo</string>
     </config-file>
     <framework src="libstdc++.tbd"/>
     <framework src="CoreMedia.framework"/>
