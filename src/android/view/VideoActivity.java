@@ -10,14 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import org.apache.cordova.CordovaActivity;
+
 import com.google.vr.sdk.widgets.common.VrWidgetView;
-import com.novonity.vr.R;
 
 import com.google.vr.sdk.widgets.video.VrVideoEventListener;
 import com.google.vr.sdk.widgets.video.VrVideoView;
 import com.google.vr.sdk.widgets.video.VrVideoView.Options;
 
-public class VideoActivity extends Activity {
+public class VideoActivity extends CordovaActivity {
 
     private static final String TAG = VideoActivity.class.getSimpleName();
 
@@ -54,9 +55,11 @@ public class VideoActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.vr_video_main);
 
-        videoWidgetView = (VrVideoView) findViewById(R.id.video_view);
+        ;
+        setContentView(getApplication().getResources().getIdentifier("vr_video_main","layout",getApplication().getPackageName()));
+
+        videoWidgetView = (VrVideoView) findViewById(getApplication().getResources().getIdentifier("video_view","id",getApplication().getPackageName()));
         videoWidgetView.setDisplayMode(VrVideoView.DisplayMode.FULLSCREEN_MONO);
         videoWidgetView.setVisibility(View.INVISIBLE);
         videoWidgetView.setInfoButtonEnabled(false);
@@ -92,7 +95,7 @@ public class VideoActivity extends Activity {
             Log.d(TAG, "Using file " + fileUri.toString());
         } else {
             fileUri = null;
-            Toast.makeText(VideoActivity.this, "视频文件不存在", Toast.LENGTH_LONG)
+            Toast.makeText(VideoActivity.this, "Video file does not exist", Toast.LENGTH_LONG)
                     .show();
             return;
         }
@@ -120,7 +123,7 @@ public class VideoActivity extends Activity {
                     videoWidgetView.post(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(VideoActivity.this, "无法打开视频文件", Toast.LENGTH_LONG)
+                            Toast.makeText(VideoActivity.this, "Unable to open video file", Toast.LENGTH_LONG)
                                     .show();
                         }
                     });
@@ -169,7 +172,7 @@ public class VideoActivity extends Activity {
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         videoWidgetView.shutdown();
         super.onDestroy();
     }
@@ -212,7 +215,7 @@ public class VideoActivity extends Activity {
             // An error here is normally due to being unable to decode the video format.
             loadVideoStatus = LOAD_VIDEO_STATUS_ERROR;
             Toast.makeText(
-                    VideoActivity.this, "加载视频文件错误", Toast.LENGTH_LONG)
+                    VideoActivity.this, "Error loading video file", Toast.LENGTH_LONG)
                     .show();
             Log.e(TAG, "Error loading video: " + errorMessage);
         }
@@ -232,4 +235,3 @@ public class VideoActivity extends Activity {
         }
     }
 }
-
